@@ -1,0 +1,126 @@
+erdiagram RcModel
+
+notation=crowsfoot
+
+// Entities
+entity Customer {
+    id: UUID key
+    name: string
+    email: string
+    phone: string
+    address: string
+    marketing_source: string
+    is_active: boolean
+    created_at: date
+}
+
+entity Manufacturer {
+    id: UUID key
+    name: string
+    website: string
+    country: string
+}
+
+entity Product {
+    id: UUID key
+    name: string
+    sku: string
+    category: string
+    scale: string
+    price: decimal
+    manufacturer_id: UUID
+    quantity_on_hand: integer
+    reorder_point: integer
+    reorder_qty: integer
+    is_active: boolean
+}
+
+entity Invoice {
+    id: UUID key
+    customer_id: UUID
+    invoice_date: date
+    shipping_charge: decimal
+    total_amount: decimal
+    is_paid: boolean
+}
+
+entity InvoiceLine {
+    invoice_id: UUID key
+    product_id: UUID key
+    quantity: integer
+    unit_price: decimal
+    line_total: decimal
+}
+
+entity Shipment {
+    id: UUID key
+    invoice_id: UUID
+    ship_date: date
+    carrier: string
+    tracking_no: string
+    status: string
+}
+
+entity Backorder {
+    id: UUID key
+    customer_id: UUID
+    product_id: UUID
+    quantity: integer
+    created_at: date
+    status: string
+}
+
+entity PurchaseOrder {
+    id: UUID key
+    manufacturer_id: UUID
+    order_date: date
+    status: string
+}
+
+entity PurchaseOrderLine {
+    purchase_order_id: UUID key
+    product_id: UUID key
+    quantity: integer
+    unit_cost: decimal
+}
+
+// Relationships (use arrow + allowed cardinalities)
+relationship Customer_Invoice {
+    Customer[1] -> Invoice[0..N]
+}
+
+relationship Invoice_InvoiceLine {
+    Invoice[1] -> InvoiceLine[N]
+}
+
+relationship Product_InvoiceLine {
+    Product[1] -> InvoiceLine[N]
+}
+
+relationship Invoice_Shipment {
+    Invoice[1] -> Shipment[0..1]
+}
+
+relationship Customer_Backorder {
+    Customer[1] -> Backorder[0..N]
+}
+
+relationship Product_Backorder {
+    Product[1] -> Backorder[0..N]
+}
+
+relationship Manufacturer_Product {
+    Manufacturer[1] -> Product[0..N]
+}
+
+relationship Manufacturer_PurchaseOrder {
+    Manufacturer[1] -> PurchaseOrder[0..N]
+}
+
+relationship PurchaseOrder_PurchaseOrderLine {
+    PurchaseOrder[1] -> PurchaseOrderLine[N]
+}
+
+relationship Product_PurchaseOrderLine {
+    Product[1] -> PurchaseOrderLine[N]
+}
